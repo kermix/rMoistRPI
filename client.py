@@ -8,7 +8,7 @@ lenth = 1024
 with socket.socket() as client_socket:
     client_socket.connect((host, port))
 
-    message = input("Message to a server: ")
+    message = 'bb'
 
     while True:
         if message.lower().strip() == 'q':
@@ -16,8 +16,13 @@ with socket.socket() as client_socket:
 
         client_socket.send(message.encode()) 
 
-        data = client_socket.recv(lenth).decode() 
+        data = client_socket.recv(lenth).decode()
+
+        if data == 'shutdown':
+            print("Connection closed by a server")
+            break
+
         print('Received from server: ' + data)
 
-        message = input("Message to a server: ")
+        message = 'aa'
 
