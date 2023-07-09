@@ -14,7 +14,13 @@ class SocketServer:
 
     LOG_LEVEL = logging.INFO
 
-    def __init__(self, host: str = DEFAULT_HOST, port: int = DEFAULT_PORT, addr_reuse: bool = REUSE_ADDRESS, log_level: int = LOG_LEVEL):
+    def __init__(
+        self,
+        host: str = DEFAULT_HOST,
+        port: int = DEFAULT_PORT,
+        addr_reuse: bool = REUSE_ADDRESS,
+        log_level: int = LOG_LEVEL,
+    ):
         self.host = host
         self.port = port
         self.addr_reuse = addr_reuse
@@ -65,7 +71,7 @@ class SocketServer:
     def exit_call(self, signal_num, frame):
         logging.info(f"Exiting due to singal {signal_num}")
         raise SignaledExit
-    
+
 
 class ConnectionThread(threading.Thread):
     LENGHT = 1024
