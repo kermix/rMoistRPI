@@ -1,0 +1,2 @@
+class SignaledExit(Exception):
+    pass
