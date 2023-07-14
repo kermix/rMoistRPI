@@ -21,10 +21,11 @@ class SocketServer:
         addr_reuse: bool = REUSE_ADDRESS,
         log_level: int = LOG_LEVEL,
     ):
-        self.host = host
-        self.port = port
-        self.addr_reuse = addr_reuse
+        self._host = host
+        self._port = port
+        self._addr_reuse = addr_reuse
         self._listener = SocketServer.DEFAULT_N_LISTENERS
+        self._is_running = False
 
         logging.basicConfig(
             format="%(asctime)s %(message)s",
@@ -42,13 +43,31 @@ class SocketServer:
         return self._listener
 
     def set_listeners(self, n_listeners: int):
+        if self.is_running:
+            logging.error('Cannot change number of listeners when server is running.')
+            return 
+        
         self.listener = n_listeners
+
+    @property
+    def host(self):
+        return self._host
+    
+    @property
+    def port(self):
+        return self._port
+     
+    @property
+    def addr_reuse(self):
+        return self._addr_reuse
 
     def run(self):
         try:
             with socket.socket(
                 family=socket.AF_INET, type=socket.SOCK_STREAM
             ) as server_socket:
+                self._is_running = True
+
                 if self.addr_reuse:
                     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -67,6 +86,8 @@ class SocketServer:
             for client_connection_thread in self._connection_threads:
                 client_connection_thread._end()
                 client_connection_thread.join()
+        finally:
+            self._is_running = False
 
     def exit_call(self, signal_num, frame):
         logging.info(f"Exiting due to singal {signal_num}")
