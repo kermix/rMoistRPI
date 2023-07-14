@@ -5,6 +5,8 @@ import signal
 import socket
 import threading
 
+from message_library import MessageLibrary
+
 
 class SocketServer:
     DEFAULT_HOST = ""
@@ -26,6 +28,8 @@ class SocketServer:
         self._addr_reuse = addr_reuse
         self._listener = SocketServer.DEFAULT_N_LISTENERS
         self._is_running = False
+        self._msg_library = None
+
 
         logging.basicConfig(
             format="%(asctime)s %(message)s",
@@ -60,8 +64,28 @@ class SocketServer:
     @property
     def addr_reuse(self):
         return self._addr_reuse
+    
+    @property
+    def is_running(self):
+        return self._is_running
+    
+    @property
+    def message_library(self):
+        return self._msg_library
+    
+    def set_message_library(self, library: MessageLibrary):
+        if self.is_running:
+            logging.error('Cannot MessageLibrary when server is running.')
+            return 
+        
+        self._msg_library = library
+
 
     def run(self):
+        if not self._msg_library:
+            # TODO: implement dedicated exception
+            raise Exception("Message library cannot be empty")
+        
         try:
             with socket.socket(
                 family=socket.AF_INET, type=socket.SOCK_STREAM
@@ -78,7 +102,7 @@ class SocketServer:
 
                 while True:
                     conn, address = server_socket.accept()
-                    client_connection_thread = ConnectionThread(conn, address)
+                    client_connection_thread = ConnectionThread(conn, address, self.message_library)
                     self._connection_threads.append(client_connection_thread)
                     client_connection_thread.start()
 
@@ -97,11 +121,12 @@ class SocketServer:
 class ConnectionThread(threading.Thread):
     LENGHT = 1024
 
-    def __init__(self, connection, address):
+    def __init__(self, connection, address, message_library):
         self._exit_signal_event = threading.Event()
 
         self._connection = connection
         self._address = address
+        self._msg_library = message_library
 
         threading.Thread.__init__(self, target=self._client_connect)
 
@@ -117,17 +142,19 @@ class ConnectionThread(threading.Thread):
         logging.info(f"Connection from {self.address} established")
 
         while not self._exit_signal_event.is_set():
-            data = self.receive_message()
+            msg = self.receive_message()
 
-            if not data:
+            if not msg:
                 break
 
-            if data == "moisture":
-                response = "0.1"
-            else:
-                response = "Unknown message"
-
-            self.send_message(response)
+            try:
+                response = self._msg_library[msg]()
+                self.send_message(response)
+            except KeyError:
+                rsponse = "There is no such message {msg} in config."
+                logging.error(rsponse)
+                self.send_message(response)
+                self._end()
 
         self._close_client_connection()
 

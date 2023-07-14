@@ -3,7 +3,7 @@ import logging
 
 from time import sleep
 
-from message import Message
+from message import StandardMessage
 from exceptions import CloseConnection
 
 
@@ -40,7 +40,7 @@ class SocketClient():
     def length(self):
         return self._length
     
-    def set_message(self, msg: Message):
+    def set_message(self, msg: StandardMessage):
         self._msg = msg
     
     def connect(self):
@@ -60,7 +60,7 @@ class SocketClient():
                 break
             except:
                 retry += 1
-                retry_delay = SocketClient.RETRY_DELAY*(retry)
+                retry_delay = SocketClient.RETRY_DELAY*retry
                 logging.error(f"Connection error. Retry {retry} from {SocketClient.MAX_RETRIES} in {retry_delay} seconds.")
                 sleep(retry_delay)
 
@@ -68,14 +68,14 @@ class SocketClient():
 class Connection():
     LENGTH = 1024
 
-    def __init__(self, socket, message: Message):
+    def __init__(self, socket, message: StandardMessage):
         self._socket = socket
         self._msg = message
 
     def run(self):
         try:
             while True:
-                self._socket.send(self._msg.encode()) 
+                self._socket.send(self._msg.message.encode()) 
                 data = self._socket.recv(Connection.LENGTH).decode()
 
                 if data == 'shutdown':
@@ -87,14 +87,8 @@ class Connection():
 
                 print('Received from server: ' + data)
 
-                sleep(15)
+                sleep(self._msg.delay)
         except KeyboardInterrupt:
             raise CloseConnection("Connection closed by a client")
-
-if __name__ == "__main__":
-    client = SocketClient("127.0.0.1")
-    
-    client.set_message('moisture')
-    client.connect()
 
 
