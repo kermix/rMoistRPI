@@ -3,8 +3,8 @@ import logging
 
 from time import sleep
 
-from message import StandardMessage
-from exceptions import CloseConnection
+from rMoistPi.message import StandardMessage
+from rMoistPi.exceptions import CloseConnection
 
 
 class SocketClient():

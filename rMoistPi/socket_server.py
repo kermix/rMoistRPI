@@ -1,4 +1,4 @@
-from exceptions import SignaledExit
+from rMoistPi.exceptions import SignaledExit
 
 import logging
 import signal
@@ -173,6 +173,9 @@ class ConnectionThread(threading.Thread):
         return message
 
     def send_message(self, message):
+        if not isinstance(message, str):
+            message = str(message)
+
         try:
             self.connection.send(message.encode())
         except BrokenPipeError as ex:
