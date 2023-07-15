@@ -146,7 +146,7 @@ class ConnectionThread(threading.Thread):
 
             if not msg:
                 break
-
+            # TODO: BUG: if server closes connecion then client receives message <response>shutdown
             try:
                 response = self._msg_library[msg]()
                 self.send_message(response)
