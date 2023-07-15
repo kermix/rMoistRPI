@@ -1,4 +1,4 @@
-from message.moisture_message import MoistureMessage
+from rMoistPi.message.moisture_message import MoistureMessage
 
 class MessageLibrary:
     available_messages = [

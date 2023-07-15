@@ -1,4 +1,4 @@
-from socket_server import SocketServer
+from rMoistPi.socket_server import SocketServer
 
 from message_library import MessageLibrary
 
