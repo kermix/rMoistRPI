@@ -26,7 +26,7 @@ def coalesce(*arg):
 
 class ClientConfig:
     DEF_PORT = 1883
-    DEF_PREFIX = "home/iot/"
+    DEF_PREFIX = "homeassistant/"
 
     def __init__(self, 
                  broker: Optional[str] = None, 
@@ -113,7 +113,7 @@ class Client:
     
     @staticmethod
     def publish_message(client, topic, message, delay):
-        while True:
+        # while True:
             if callable(message):
                 message = message()
 
@@ -131,9 +131,10 @@ class Client:
         client.loop_start()  
         for msg in messages:
             #TODO: refacator StandardMessage class and child classes
-            topic = f"{self._prefix}{msg.message}/latest"
+            topic = f"{self._prefix}{msg.message}/state"
             message = msg.get_response
             delay = msg.delay
+            Client.publish_message(client,f"{self._prefix}{msg.message}/config", msg.config, 0)
             thread = threading.Thread(target=Client.publish_message, args=(client, topic, message, delay))
             threads.append(thread)
             thread.start() 

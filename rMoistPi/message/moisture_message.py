@@ -29,8 +29,17 @@ class GroveMoistureSensor:
 
 
 class MoistureMessage(StandardMessage):
-    message = 'moisture'
+    message = 'sensor/rmoistpi_moist'
     delay = 1
+
+    config = """
+            {
+                "device_class": "humidity", 
+                "state_topic": "homeassistant/sensor/rmoistpi_moist/state", 
+                "unit_of_measurement": "%", 
+                "unique_id": "hum02ae", 
+                "device": {"identifiers": ["rmoistpi02ae"], "name": "rMoistPi" } }
+    """
 
     @staticmethod
     def get_response():
@@ -41,8 +50,11 @@ class MoistureMessage(StandardMessage):
         sensor = GroveMoistureSensor(MOISTURE_SENSOR_PIN)
         measure = sensor.moisture
 
+        if measure > 2010:
+            return 0
+
         if measure < 1220:
-            return "100%"
+            return 100
 
         moisture = ((2010 - measure)*100.0)/(2010-1220)
-        return f"{moisture}%"
+        return moisture
