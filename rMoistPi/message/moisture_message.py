@@ -1,5 +1,5 @@
 from . import StandardMessage
-# from grove.grove_moisture_sensor import GroveMoistureSensor
+import json
 
 from grove.adc import ADC
 
@@ -32,18 +32,22 @@ class MoistureMessage(StandardMessage):
     message = 'sensor/rmoistpi_moist'
     delay = 1
 
-    config = """
-            {
-                "device_class": "humidity", 
-                "state_topic": "homeassistant/sensor/rmoistpi_moist/state", 
-                "unit_of_measurement": "%", 
-                "unique_id": "hum02ae", 
-                "device": {"identifiers": ["rmoistpi02ae"], "name": "rMoistPi" } }
-    """
+    config = {
+        "device_class": "humidity", 
+        "state_topic": "homeassistant/sensor/rmoistpi_moist/state", 
+        "unit_of_measurement": "%", 
+        "unique_id": "hum02ae", 
+        "device": {"identifiers": ["rmoistpi02ae"], "name": "rMoistPi" }
+    }
+ 
 
     @staticmethod
     def get_response():
         return MoistureMessage.read_moisture()
+    
+    @staticmethod
+    def get_config_json():
+        return json.dumps(MoistureMessage.config)
 
     @staticmethod
     def read_moisture():
