@@ -4,7 +4,7 @@ from typing import Optional
 
 from paho.mqtt import client as mqtt_client
 
-import socketP
+import socket
 import ssl
 
 import logging
