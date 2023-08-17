@@ -1,9 +1,9 @@
 from abc import ABC, abstractstaticmethod
 
 class StandardMessage(ABC):
-    message: str
+    topic: str
     delay: int
 
     @abstractstaticmethod
-    def get_response():
+    def get_message():
         pass
