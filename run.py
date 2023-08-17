@@ -1,7 +1,8 @@
-from rMoistPi import client
-
-from rMoistPi.message import moisture_message
+from rMoistPi.client import Client
 
 if __name__ == "__main__":
-    c = client.Client()
-    c.run([moisture_message.MoistureMessage])
+    client = Client(debug=True)
+
+    from rMoistPi.message import moisture_message
+
+    client.run([moisture_message.MoistureMessage])
