@@ -1,0 +1,12 @@
+[Unit]
+Description=rMoistPi service
+After=multi-user.target
+
+[Service]
+Type=simple
+WorkingDirectory=/srv/rMoistPi
+ExecStart=/srv/rMoistPi/venv/bin/python /srv/rMoistPi/run.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
