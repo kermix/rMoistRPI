@@ -102,6 +102,7 @@ class Client:
                 client_connection_thread.join()
         finally:
             client.loop_stop()
+            client.disconnect()
             self._is_running = False
 
         
