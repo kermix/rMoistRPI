@@ -33,14 +33,15 @@ class GroveMoistureSensor:
 
 
 class MoistureMessage(StandardMessage):
-    topic = 'sensor/rmoistpi_moist'
+    topic = 'sensor/rmoistpiMoist'
     delay = 1
 
     _min_readout, _max_readout = 1220, 2010
 
     config = {
+        "name": "rMoistPi Humidity",
         "device_class": "humidity", 
-        "state_topic": "homeassistant/sensor/rmoistpi_moist/state", 
+        "state_topic": "homeassistant/sensor/rmoistpiMoist/state", 
         "unit_of_measurement": "%", 
         "unique_id": "hum02ae", 
         "device": {"identifiers": ["rmoistpi02ae"], "name": "rMoistPi" }
